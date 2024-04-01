@@ -58,10 +58,6 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
     }
   }
 
-  role_based_access_control {
-    enabled = true
-  }
-
   service_principal {
     client_id     = data.azurerm_key_vault_secret.spn_id.value
     client_secret = data.azurerm_key_vault_secret.spn_secret.value
@@ -70,4 +66,24 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
   tags = {
     Environment = "Demo"
   }
+
+  # If we dont use the key vault, add the next lines to apply local ssh:
+
+  #resource "tls_private_key" "linux_key" {
+  #algorithm = "RSA"
+  #rsa_bits  = 4096
+  #}
+
+# We want to save the private key to our machine
+# We can then use this key to connect to our Linux VM
+
+  #resource "local_file" "linuxkey" {
+  #filename = "linuxkey.pem"
+  #content  = tls_private_key.linux_key.private_key_pem
+  #}
+
+  #admin_ssh_key {
+  #username   = "luis486"
+  #public_key = tls_private_key.linux_key.public_key_openssh
+  #}
 }
