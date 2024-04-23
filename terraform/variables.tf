@@ -174,7 +174,7 @@ variable "path" {
 }
 
 variable "protocols" {
-  type        = list
+  type        = list(any)
   default     = ["https", "http"]
   description = "API security protocols"
 }
