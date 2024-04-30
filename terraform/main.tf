@@ -77,12 +77,12 @@ locals {
 
 # Creación del grupo de seguridad de red para permitir la comunicación a la vm
 
-resource "azurerm_network_security_group" "main" {
+resource "azurerm_network_security_group" "vm" {
   name                = "vm-security-group"
-  location            = azurerm_resource_group.aks_rg.location
-  resource_group_name = azurerm_resource_group.aks_rg.name
+  location            = azurerm_resource_group.argk8s.location
+  resource_group_name = azurerm_resource_group.argk8s.name
 
- security_rule {
+  security_rule {
     name                       = "vm-ssh-rule"
     priority                   = 1001
     direction                  = "Inbound"
@@ -92,7 +92,21 @@ resource "azurerm_network_security_group" "main" {
     destination_port_range     = "22"
     source_address_prefix      = "*"
     destination_address_prefix = "*"
-    
+  }
+
+  security_rule {
+    name                       = "vm-access-rule"
+    priority                   = 1002
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "5984"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+}
+
 # ----------------------------------- API GATEWAY -----------------------------------
 
 resource "azurerm_application_gateway" "myApplicationGateway" {
@@ -161,8 +175,8 @@ resource "azurerm_application_gateway" "myApplicationGateway" {
 
 resource "azurerm_container_registry" "main" {
   name                = "myHealthContainerRegistry"
-  resource_group_name = azurerm_resource_group.aks_rg.name
-  location            = azurerm_resource_group.aks_rg.location
+  resource_group_name = azurerm_resource_group.argk8s.name
+  location            = azurerm_resource_group.argk8s.location
   sku                 = "Basic"
   admin_enabled       = true
 }
@@ -179,10 +193,10 @@ resource "azurerm_container_registry" "main" {
 
 
 resource "azurerm_kubernetes_cluster" "aks_cluster" {
-  name                = var.cluster_name
-  location            = azurerm_resource_group.aks_rg.location
-  resource_group_name = azurerm_resource_group.aks_rg.name
-  dns_prefix          = var.dns_name
+  name                = "aks_cluster"
+  location            = azurerm_resource_group.argk8s.location
+  resource_group_name = azurerm_resource_group.argk8s.name
+  dns_prefix          = "MyClusterDNS"
 
   # Configuracion del grupo de nodos por defecto
   default_node_pool {
@@ -200,9 +214,9 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
 
 # Generacion del archivo kubeconfig para poder linkear kubectl de forma local con el cluster en la nube
 resource "local_file" "kubeconfig" {
-  depends_on = [azurerm_kubernetes_cluster.myCluster]
+  depends_on = [azurerm_kubernetes_cluster.aks_cluster]
   filename   = "kubeconfig"
-  content    = azurerm_kubernetes_cluster.myCluster.kube_config_raw
+  content    = azurerm_kubernetes_cluster.aks_cluster.kube_config_raw
 }
 
 
