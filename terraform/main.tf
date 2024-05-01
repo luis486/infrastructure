@@ -174,7 +174,7 @@ resource "azurerm_application_gateway" "myApplicationGateway" {
 #-------------------------------CONTAINER-REGISTRY---------------------------
 
 resource "azurerm_container_registry" "main" {
-  name                = "myHealthContainerRegistry"
+  name                = "myk8sContRegistry"
   resource_group_name = azurerm_resource_group.argk8s.name
   location            = azurerm_resource_group.argk8s.location
   sku                 = "Basic"
