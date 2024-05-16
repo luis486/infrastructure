@@ -198,17 +198,17 @@ resource "azurerm_key_vault" "key_vault" {
 
 resource "azurerm_key_vault_secret" "key_vault_secret" {
   count        = 4
-  name         = ["mySecret1", "mySecret2"]
-  value        = ["primeracontra1!", "segundacontra2!"]
+  name         = "mySecret1"
+  value        = "primeracontra1!"
   key_vault_id = azurerm_key_vault.key_vault.id
 }
 
 resource "azurerm_key_vault_key" "key_vault_key" {
   count        = 4
-  name         = ["myfirstkey", "mysecondkey"]
+  name         = "myfirstkey"
   key_vault_id = azurerm_key_vault.key_vault.id
-  key_type     = ["RSA","RSA"]
-  key_size     = [2048,2048]
+  key_type     = "RSA"
+  key_size     = 2048
 
   key_opts = ["decrypt", "encrypt", "sign", "unwrapKey", "verify", "wrapKey"]
 
