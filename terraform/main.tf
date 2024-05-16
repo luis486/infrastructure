@@ -1,17 +1,3 @@
-# Para desplegar este ejemplo necesitas primero crear todos los recursos con terraform apply
-# Luego debes extrare el id del api gateway ya desplegado con el siguiente comando
-# appgwId=$(az network application-gateway show -n myApplicationGateway -g testingApiK8sResourceGroup -o tsv --query "id")
-# Luego debes habilitar el controlador ingress y unirlo con dicha api con el comando
-# az aks enable-addons -n myCluster -g testingApiK8sResourceGroup -a ingress-appgw --appgw-id $appgwId
-# Luego, deberas mover el archivo kubeconfig a tu contexto local para poder usar los comandos
-# de kubectl en tu pc y comunicarse directamente con la nube
-# con mv kubeconfig ~/.kube/config se realiza dicha accion
-# luego puedes crear con kubectl el cluster-example.yaml o obtenerlo del repo oficial
-# kubectl apply -f https://raw.githubusercontent.com/Azure/application-gateway-kubernetes-ingress/master/docs/examples/aspnetapp.yaml 
-# luego kubectl get ingress para ver su ip o en puedes ir a azure, ver el recurso api gateway y la 
-# DIR IP FRONTEND que aparezca en el overview de tu apigateway deberia ser ahora el punto de acceso a
-# los recursos creados en el cluster
-
 
 # --------------------------------- RECURSOS ---------------------------------
 
@@ -43,7 +29,7 @@ resource "azurerm_subnet" "apiGatewaySubnet" {
   name                 = "apiGatewaySubnet"
   resource_group_name  = azurerm_resource_group.argk8s.name
   virtual_network_name = azurerm_virtual_network.apiVnet.name
-  address_prefixes     = ["10.1.1.0/24"]
+  address_prefixes     = ["10.1.10.0/24"]
 }
 # Virtual Network sobre lo que estara asociado el Cluster
 resource "azurerm_virtual_network" "clusterVnet" {
@@ -57,10 +43,12 @@ resource "azurerm_subnet" "clusterSubnet" {
   name                 = "clusterSubnet"
   resource_group_name  = azurerm_resource_group.argk8s.name
   virtual_network_name = azurerm_virtual_network.clusterVnet.name
-  address_prefixes     = ["10.2.1.0/24"]
+  address_prefixes     = ["10.2.10.0/24"]
 }
 
 #----------------------------- VARIABLES LOCALES -------------------------------------
+
+data "azurerm_client_config" "current" {}
 
 locals {
   # Aqui se definen variables locales asociados a varios recursos de red para mantener
@@ -73,6 +61,7 @@ locals {
   listener_name                  = "${azurerm_virtual_network.apiVnet.name}-httplstn"
   request_routing_rule_name      = "${azurerm_virtual_network.apiVnet.name}-rqrt"
   redirect_configuration_name    = "${azurerm_virtual_network.apiVnet.name}-rdrcfg"
+  current_user_id                = coalesce(null, data.azurerm_client_config.current.object_id)
 }
 
 # Creación del grupo de seguridad de red para permitir la comunicación a la vm
@@ -185,9 +174,53 @@ resource "azurerm_container_registry" "main" {
 #------------------------------ KEY VAULT----------------------------------
 
 
+resource "azurerm_key_vault" "key_vault" {
+  name                       = "myKeyVault"
+  location                   = azurerm_resource_group.argk8s.location
+  resource_group_name        = azurerm_resource_group.argk8s.name
+  tenant_id                  = data.azurerm_client_config.current.tenant_id
+  soft_delete_retention_days = 7
+  sku_name                   = "standard"
+  enabled_for_disk_encryption= true
+  purge_protection_enabled   = false
 
 
 
+  access_policy {
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    object_id = local.current_user_id
+
+    key_permissions       = ["Get", "Create", "List", "Delete", "Purge", "Recover", "SetRotationPolicy", "GetRotationPolicy"]
+    secret_permissions    = ["Get", "Set", "List", "Delete", "Purge", "Recover"]
+    certificate_permissions = ["Get"]
+  }
+}
+
+resource "azurerm_key_vault_secret" "key_vault_secret" {
+  count        = 4
+  name         = ["mySecret1", "mySecret2"]
+  value        = ["primeracontra1!", "segundacontra2!"]
+  key_vault_id = azurerm_key_vault.key_vault.id
+}
+
+resource "azurerm_key_vault_key" "key_vault_key" {
+  count        = 4
+  name         = ["myfirstkey", "mysecondkey"]
+  key_vault_id = azurerm_key_vault.key_vault.id
+  key_type     = ["RSA","RSA"]
+  key_size     = [2048,2048]
+
+  key_opts = ["decrypt", "encrypt", "sign", "unwrapKey", "verify", "wrapKey"]
+
+  rotation_policy {
+    automatic {
+      time_before_expiry = "P30D"
+    }
+
+    expire_after         = "P90D"
+    notify_before_expiry = "P29D"
+  }
+}
 
 # ----------------------------- CLUSTER K8S ------------------------------
 
