@@ -1,49 +1,11 @@
 
 # --------------------------------- RECURSOS ---------------------------------
 
-# Grupo de recursos sobre lo que se creara todo el codigo
-resource "azurerm_resource_group" "argk8s" {
-  name     = "ApiK8sResourceGroup"
-  location = "East US"
-}
+
 
 # ----------------------------------- RED -----------------------------------------
 
-# Ip Publica para asociarla al Api Gateway
-resource "azurerm_public_ip" "publicIp" {
-  name                = "PublicIp"
-  location            = azurerm_resource_group.argk8s.location
-  resource_group_name = azurerm_resource_group.argk8s.name
-  allocation_method   = "Static"
-  sku                 = "Standard"
-}
-# Virtual Network sobre lo que estara asociado el Api Gateway
-resource "azurerm_virtual_network" "apiVnet" {
-  name                = "ApiVnet"
-  resource_group_name = azurerm_resource_group.argk8s.name
-  location            = azurerm_resource_group.argk8s.location
-  address_space       = ["10.1.0.0/16"]
-}
-# Subred en la que estara el Api Gateway
-resource "azurerm_subnet" "apiGatewaySubnet" {
-  name                 = "apiGatewaySubnet"
-  resource_group_name  = azurerm_resource_group.argk8s.name
-  virtual_network_name = azurerm_virtual_network.apiVnet.name
-  address_prefixes     = ["10.1.10.0/24"]
-}
-# Virtual Network sobre lo que estara asociado el Cluster
-resource "azurerm_virtual_network" "clusterVnet" {
-  name                = "myClusterVnet"
-  resource_group_name = azurerm_resource_group.argk8s.name
-  location            = azurerm_resource_group.argk8s.location
-  address_space       = ["10.2.0.0/16"]
-}
-# Subred en la que estara el Cluster
-resource "azurerm_subnet" "clusterSubnet" {
-  name                 = "clusterSubnet"
-  resource_group_name  = azurerm_resource_group.argk8s.name
-  virtual_network_name = azurerm_virtual_network.clusterVnet.name
-  address_prefixes     = ["10.2.10.0/24"]
+
 }
 
 #----------------------------- VARIABLES LOCALES -------------------------------------
@@ -162,14 +124,13 @@ resource "azurerm_application_gateway" "myApplicationGateway" {
 
 #-------------------------------CONTAINER-REGISTRY---------------------------
 
-resource "azurerm_container_registry" "main" {
-  name                = "myk8sContRegistry"
-  resource_group_name = azurerm_resource_group.argk8s.name
-  location            = azurerm_resource_group.argk8s.location
-  sku                 = "Basic"
-  admin_enabled       = true
+module "container_registry" {
+  source                  = "./modules/container_registry"
+  container_name          = "myPLDFirstContainerRegistry"
+  resource_group_name     = module.resource_group.resource_group_name
+  resource_group_location = module.resource_group.location
+  
 }
-
 
 #------------------------------ KEY VAULT----------------------------------
 
