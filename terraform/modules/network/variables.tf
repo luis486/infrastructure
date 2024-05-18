@@ -3,11 +3,11 @@ variable "public_ip" {
   default = "myFirstPublicIp"
 }
 
-variable "location" {
+variable "rg_location" {
   description = "Location for the Azure resources"
 }
 
-variable "resource_group" {
+variable "rg_name" {
   description = "Name of the Azure Resource Group"
 }
 

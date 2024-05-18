@@ -2,8 +2,8 @@
 # --------------------------------- RECURSOS ---------------------------------
 
 module "resources" {
-  source              = "./modules/resources"
-  rg_name = "ApiK8sResourceGroup"
+  source      = "./modules/resources"
+  rg_name     = "ApiK8sResourceGroup"
   rg_location = "East US"
 }
 
@@ -12,7 +12,7 @@ module "resources" {
 
 module "network" {
   source                              = "./modules/network"
-  resource_group                 = module.resources.rg_name
+  resource_group                      = module.resources.rg_name
   location                            = module.resources.location
   api_vnet_address_space              = ["10.1.0.0/16"]
   api_gateway_subnet_address_prefixes = ["10.1.10.0/24"]
@@ -142,21 +142,21 @@ module "container_registry" {
   container_name          = "myPLDFirstContainerRegistry"
   resource_group_name     = module.resource_group.resource_group_name
   resource_group_location = module.resource_group.location
-  
+
 }
 
 #------------------------------ KEY VAULT----------------------------------
 
 
 resource "azurerm_key_vault" "key_vault" {
-  name                       = "myKeyVault"
-  location                   = azurerm_resource_group.argk8s.location
-  resource_group_name        = azurerm_resource_group.argk8s.name
-  tenant_id                  = data.azurerm_client_config.current.tenant_id
-  soft_delete_retention_days = 7
-  sku_name                   = "standard"
-  enabled_for_disk_encryption= true
-  purge_protection_enabled   = false
+  name                        = "myKeyVault"
+  location                    = azurerm_resource_group.argk8s.location
+  resource_group_name         = azurerm_resource_group.argk8s.name
+  tenant_id                   = data.azurerm_client_config.current.tenant_id
+  soft_delete_retention_days  = 7
+  sku_name                    = "standard"
+  enabled_for_disk_encryption = true
+  purge_protection_enabled    = false
 
 
 
@@ -164,8 +164,8 @@ resource "azurerm_key_vault" "key_vault" {
     tenant_id = data.azurerm_client_config.current.tenant_id
     object_id = local.current_user_id
 
-    key_permissions       = ["Get", "Create", "List", "Delete", "Purge", "Recover", "SetRotationPolicy", "GetRotationPolicy"]
-    secret_permissions    = ["Get", "Set", "List", "Delete", "Purge", "Recover"]
+    key_permissions         = ["Get", "Create", "List", "Delete", "Purge", "Recover", "SetRotationPolicy", "GetRotationPolicy"]
+    secret_permissions      = ["Get", "Set", "List", "Delete", "Purge", "Recover"]
     certificate_permissions = ["Get"]
   }
 }
@@ -199,58 +199,13 @@ resource "azurerm_key_vault_key" "key_vault_key" {
 # ----------------------------- CLUSTER K8S ------------------------------
 
 
-resource "azurerm_kubernetes_cluster" "aks_cluster" {
-  name                = "aks_cluster"
-  location            = azurerm_resource_group.argk8s.location
-  resource_group_name = azurerm_resource_group.argk8s.name
-  dns_prefix          = "MyClusterDNS"
-
-  # Configuracion del grupo de nodos por defecto
-  default_node_pool {
-    name            = "nodepool"
-    node_count      = 1
-    vm_size         = "Standard_D2_v2"
-    os_disk_size_gb = 40
-    vnet_subnet_id  = azurerm_subnet.clusterSubnet.id
-  }
-
-  identity {
-    type = "SystemAssigned"
-  }
+module "cluster" {
+  source                  = "./modules/cluster"
+  resource_group          = module.resources.rg_name
+  location                = module.resources.rg_location
+  vnet_subnet_id          = module.network.cluster_subnet_id
+  secret_rotation_enabled = true
+  private_cluster_enabled = true
 }
-
-# Generacion del archivo kubeconfig para poder linkear kubectl de forma local con el cluster en la nube
-resource "local_file" "kubeconfig" {
-  depends_on = [azurerm_kubernetes_cluster.aks_cluster]
-  filename   = "kubeconfig"
-  content    = azurerm_kubernetes_cluster.aks_cluster.kube_config_raw
-}
-
-
-
-#--------------------------------- UNIÓN REDES VIRTUALES ----------------------------------------- 
-
-# Dado que ha desplegado el clúster AKS en su propia red virtual y la puerta de enlace de 
-# aplicaciones en otra red virtual, tendrá que unir las dos redes virtuales para que el tráfico 
-# fluya desde la puerta de enlace de aplicaciones a los pods del clúster.
-
-# Creacion de la relacion de confianza entre las redes virtuales del cluster y de la aplicacion
-resource "azurerm_virtual_network_peering" "AppGWtoClusterVnetPeering" {
-  name                         = "AppGWtoClusterVnetPeering"
-  resource_group_name          = azurerm_resource_group.argk8s.name
-  virtual_network_name         = azurerm_virtual_network.apiVnet.name
-  remote_virtual_network_id    = azurerm_virtual_network.clusterVnet.id
-  allow_virtual_network_access = true
-}
-
-# Creacion de la relacion de confianza entre las redes virtuales del cluster y de la aplicacion
-resource "azurerm_virtual_network_peering" "ClustertoAppGWVnetPeering" {
-  name                         = "ClustertoAppGWVnetPeering"
-  resource_group_name          = azurerm_resource_group.argk8s.name
-  virtual_network_name         = azurerm_virtual_network.clusterVnet.name
-  remote_virtual_network_id    = azurerm_virtual_network.apiVnet.id
-  allow_virtual_network_access = true
-}
-
 
 
