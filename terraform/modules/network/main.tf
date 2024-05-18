@@ -2,36 +2,75 @@
 
 # Ip Publica para asociarla al Api Gateway
 resource "azurerm_public_ip" "publicIp" {
-  name                = "PublicIp"
-  location            = azurerm_resource_group.argk8s.location
-  resource_group_name = azurerm_resource_group.argk8s.name
-  allocation_method   = "Static"
-  sku                 = "Standard"
+  name                = var.public_ip
+  location            = var.location
+  resource_group_name = var.resource_group
+  allocation_method   = var.allocation_method
+  sku                 = var.sku
 }
+
+# Crea y configura una dirección IP pública en Azure
+
+resource "azurerm_public_ip" "bastionpublicIp" {
+  name                = var.bastion_public_ip
+  location            = var.location
+  resource_group_name = var.resource_group
+  allocation_method   = var.allocation_method
+  sku                 = var.sku
+}
+
 # Virtual Network sobre lo que estara asociado el Api Gateway
 resource "azurerm_virtual_network" "apiVnet" {
-  name                = "ApiVnet"
-  resource_group_name = azurerm_resource_group.argk8s.name
-  location            = azurerm_resource_group.argk8s.location
-  address_space       = ["10.1.0.0/16"]
+  name                = var.api_vnet
+  resource_group_name = var.resource_group
+  location            = var.location
+  address_space       = var.apgw_vnet_address_space
 }
+
+
 # Subred en la que estara el Api Gateway
 resource "azurerm_subnet" "apiGatewaySubnet" {
-  name                 = "apiGatewaySubnet"
-  resource_group_name  = azurerm_resource_group.argk8s.name
+  name                 = var.apgw_subnet
+  resource_group_name  = var.resource_group
   virtual_network_name = azurerm_virtual_network.apiVnet.name
-  address_prefixes     = ["10.1.10.0/24"]
+  address_prefixes     = var.apgw_subnet_address_prefixes
 }
+
 # Virtual Network sobre lo que estara asociado el Cluster
 resource "azurerm_virtual_network" "clusterVnet" {
-  name                = "myClusterVnet"
-  resource_group_name = azurerm_resource_group.argk8s.name
-  location            = azurerm_resource_group.argk8s.location
-  address_space       = ["10.2.0.0/16"]
+  name                = var.myClusterVnet
+  resource_group_name = var.resource_group
+  location            = var.location
+  address_space       = var.cluster_vnet_address_space
 }
+
 # Subred en la que estara el Cluster
 resource "azurerm_subnet" "clusterSubnet" {
-  name                 = "clusterSubnet"
-  resource_group_name  = azurerm_resource_group.argk8s.name
+  name                 = var.cluster_subnet
+  resource_group_name  = var.resource_group
   virtual_network_name = azurerm_virtual_network.clusterVnet.name
-  address_prefixes     = ["10.2.10.0/24"]
+  address_prefixes     = var.cluster_subnet_address_prefixes
+}
+
+
+# Azure Virtual Network Peering permite conectar redes virtuales (VNets) en Azure, facilitando la comunicación entre ellas con una latencia mínima y sin la
+# necesidad de utilizar gateways o túneles VPN.
+
+resource "azurerm_virtual_network_peering" "AppGWtoClusterVnetPeering" {
+  name                         = var.appgw_to_cluster_peering
+  resource_group_name          = var.resource_group
+  virtual_network_name         = azurerm_virtual_network.apiVnet.name
+  remote_virtual_network_id    = azurerm_virtual_network.clusterVnet.id
+  allow_virtual_network_access = true
+}
+
+# Estos dos recursos juntos crean una conexión bidireccional entre las 
+# redes virtuales apiVnet y clusterVnet
+
+resource "azurerm_virtual_network_peering" "ClustertoAppGWVnetPeering" {
+  name                         = var.cluster_to_appgw_peering
+  resource_group_name          = var.resource_group
+  virtual_network_name         = azurerm_virtual_network.clusterVnet.name
+  remote_virtual_network_id    = azurerm_virtual_network.apiVnet.id
+  allow_virtual_network_access = true
+}

@@ -1,12 +1,25 @@
 
 # --------------------------------- RECURSOS ---------------------------------
 
-
+module "resources" {
+  source              = "./modules/resources"
+  rg_name = "ApiK8sResourceGroup"
+  rg_location = "East US"
+}
 
 # ----------------------------------- RED -----------------------------------------
 
 
+module "network" {
+  source                              = "./modules/network"
+  resource_group                 = module.resources.rg_name
+  location                            = module.resources.location
+  api_vnet_address_space              = ["10.1.0.0/16"]
+  api_gateway_subnet_address_prefixes = ["10.1.10.0/24"]
+  cluster_vnet_address_space          = ["10.2.0.0/16"]
+  cluster_subnet_address_prefixes     = ["10.2.10.0/24"]
 }
+
 
 #----------------------------- VARIABLES LOCALES -------------------------------------
 
