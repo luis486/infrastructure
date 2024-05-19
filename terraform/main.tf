@@ -53,9 +53,9 @@ module "appgw" {
   source                                          = "./modules/appgw"
   resource_group_name                             = module.resources.rg_name
   location                                        = module.resources.rg_location
-  subnet_id                                       = module.network.api_gateway_subnet_id
+  subnet_id                                       = module.network..apgw_subnet
   frontend_ip_configuration_name                  = local.frontend_ip_configuration_name
-  public_ip_address_id                            = module.network.public_ip_id
+  public_ip_address_id                            = module.network.public_ip
   frontend_port_name                              = local.frontend_port_HTTP_name
   backend_address_pool_name                       = local.backend_address_pool_name
   backend_http_settings_name                      = local.http_setting_name
@@ -99,7 +99,7 @@ module "cluster" {
   source                  = "./modules/cluster"
   resource_group          = module.resources.rg_name
   location                = module.resources.rg_location
-  vnet_subnet_id          = module.network.cluster_subnet_id
+  vnet_subnet_id          = module.network.cluster_subnet
   secret_rotation_enabled = true
   private_cluster_enabled = true
 }
