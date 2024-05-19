@@ -4,15 +4,15 @@ data "azurerm_client_config" "current" {}
 
 locals {
   # Aqui se definen variables locales asociados a varios recursos de red para mantener
-  # la lebibilidad, consistencia y reutilizacion de dichas variables en el codigo
-  backend_address_pool_name      = "${module.networking.api_vnet_name}-beap"
-  frontend_port_HTTP_name        = "${module.networking.api_vnet_name}-fe_HTTP_port"
-  frontend_port_HTTPS_name       = "${module.networking.api_vnet_name}-fe_HTTPS_port"
-  frontend_ip_configuration_name = "${module.networking.api_vnet_name}-feip"
-  http_setting_name              = "${module.networking.api_vnet_name}-be-htst"
-  listener_name                  = "${module.networking.api_vnet_name}-httplstn"
-  request_routing_rule_name      = "${module.networking.api_vnet_name}-rqrt"
-  redirect_configuration_name    = "${module.networking.api_vnet_name}-rdrcfg"
+  # la legibilidad, consistencia y reutilizacion de dichas variables en el codigo
+  backend_address_pool_name      = "${module.network.apgw}-beap"
+  frontend_port_HTTP_name        = "${module.network.apgw}-fe_HTTP_port"
+  frontend_port_HTTPS_name       = "${module.network.apgw}-fe_HTTPS_port"
+  frontend_ip_configuration_name = "${module.network.apgw}-feip"
+  http_setting_name              = "${module.network.apgw}-be-htst"
+  listener_name                  = "${module.network.apgw}-httplstn"
+  request_routing_rule_name      = "${module.network.apgw}-rqrt"
+  redirect_configuration_name    = "${module.network.apgw}-rdrcfg"
   current_user_id                = coalesce(null, data.azurerm_client_config.current.object_id)
 }
 
