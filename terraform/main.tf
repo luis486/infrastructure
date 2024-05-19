@@ -29,8 +29,8 @@ module "resources" {
 module "container_registry" {
   source                  = "./modules/container_registry"
   container_name          = "myPLDFirstContainerRegistry"
-  resource_group_name     = module.resource_group.resource_group_name
-  resource_group_location = module.resource_group.location
+  resource_group_name     = module.resources.rg_name
+  resource_group_location = module.resources.rg_name
 
 }
 
