@@ -1,6 +1,7 @@
 
 variable "application_gateway" {
   description = "The name of the Application Gateway."
+  default = "myPLDApplicationGateway"
 }
 
 variable "rg_name" {
