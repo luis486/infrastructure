@@ -30,7 +30,7 @@ module "container_registry" {
   source                  = "./modules/container_registry"
   container_name          = "myPLDFirstContainerRegistry"
   resource_group_name     = module.resources.rg_name
-  resource_group_location = module.resources.rg_name
+  resource_group_location = module.resources.rg_location
 
 }
 
@@ -39,7 +39,7 @@ module "container_registry" {
 module "network" {
   source                              = "./modules/network"
   resource_group                      = module.resources.rg_name
-  location                            = module.resources.location
+  location                            = module.resources.rg_location
   api_vnet_address_space              = ["10.1.0.0/16"]
   api_gateway_subnet_address_prefixes = ["10.1.10.0/24"]
   cluster_vnet_address_space          = ["10.2.0.0/16"]
@@ -53,7 +53,7 @@ module "appgw" {
   source                                          = "./modules/appgw"
   resource_group_name                             = module.resources.rg_name
   location                                        = module.resources.rg_location
-  subnet_id                                       = module.network..apgw_subnet
+  subnet_id                                       = module.network.apgw_subnet
   frontend_ip_configuration_name                  = local.frontend_ip_configuration_name
   public_ip_address_id                            = module.network.public_ip
   frontend_port_name                              = local.frontend_port_HTTP_name
@@ -74,7 +74,7 @@ module "key_vault" {
   source                      = "./modules/keyvault"
   key_vault_name              = "myPLDKeyVault"
   resource_group_name         = module.resources.rg_name
-  location                    = module.resources.rg.location
+  location                    = module.resources.rg_location
   tenant_id                   = data.azurerm_client_config.current.tenant_id
   object_id                   = local.current_user_id
   key_permissions             = ["Get", "Create", "List", "Delete", "Purge", "Recover", "SetRotationPolicy", "GetRotationPolicy"]
@@ -105,3 +105,13 @@ module "cluster" {
 }
 
 
+#---------------------------------CONTAINER-REGISTRY-------------------------------------
+
+
+module "container_registry" {
+  source                  = "./modules/container_registry"
+  container_name          = "myPLDcontainerRegistry"
+  resource_group_name     = module.resources.rg_name
+  resource_group_location = module.resources.rg_location
+  container_sku           = "Standard"
+}
