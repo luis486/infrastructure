@@ -3,18 +3,14 @@ variable "public_ip" {
   default = "myFirstPublicIp"
 }
 
-variable "rg_location" {
+variable "location" {
   description = "Location for the Azure resources"
 }
 
-variable "rg_name" {
+variable "resource_group_name" {
   description = "Name of the Azure Resource Group"
 }
 
-variable "bastion_public_ip" {
-  description = "Name of the Azure Public IP"
-  default = "bastionPublicIP"
-}
 
 variable "allocation_method" {
   description = "Allocation method for the Public IP"
@@ -26,7 +22,7 @@ variable "sku" {
   default = "Standard"
 }
 
-variable "apgw" {
+variable "apgw_vnet" {
   description = "Name of the API Virtual Network"
   default = "ApiVnet"
 }

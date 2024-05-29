@@ -2,11 +2,11 @@ variable "cr_name" {
   description = "The name of the Azure Container Registry."
 }
 
-variable "rg_name" {
+variable "resource_group_name" {
   description = "The name of the resource group in which to create the Azure Container Registry."
 }
 
-variable "rg_location" {
+variable "location" {
   description = "The location of the resource group in which to create the Azure Container Registry."
 }
 

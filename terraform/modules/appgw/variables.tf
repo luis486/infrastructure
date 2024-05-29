@@ -4,11 +4,11 @@ variable "application_gateway" {
   default = "myPLDApplicationGateway"
 }
 
-variable "rg_name" {
+variable "resource_group_name" {
   description = "The name of the resource group in which to create the Application Gateway."
 }
 
-variable "rg_location" {
+variable "location" {
   description = "The location/region where the Application Gateway will be deployed."
 }
 

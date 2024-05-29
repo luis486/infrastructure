@@ -1,7 +1,7 @@
 resource "azurerm_kubernetes_cluster" "aks_cluster" {
   name                = var.cluster_name
-  location            = var.rg_location
-  resource_group_name = var.rg_name
+  location             = var.location
+  resource_group_name = var.resource_group_name
   dns_prefix          = var.dns_prefix
 
   # Configuracion del grupo de nodos por defecto

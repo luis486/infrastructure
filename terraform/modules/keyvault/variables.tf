@@ -16,13 +16,13 @@ variable "tenant_id" {
 
 variable "soft_delete_retention_days" {
   description = "Soft delete retention period in days"
-  type = number
-  default = 7
+  type        = number
+  default     = 7
 }
 
 variable "sku_name" {
   description = "SKU name for the Azure Key Vault"
-  default = "Standard"
+  default     = "Standard"
 }
 
 variable "object_id" {
@@ -88,10 +88,10 @@ variable "notify_before_expiry" {
 
 variable "enabled_for_disk_encryption" {
   description = "Notify before expiry"
-  default = true
+  default     = true
 }
 
 variable "purge_protection_enabled" {
   description = "Notify before expiry"
-  default = false
+  default     = false
 }

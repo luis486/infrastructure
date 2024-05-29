@@ -8,11 +8,11 @@ variable "dns_prefix" {
   default = "MyClusterDNS"
 }
 
-variable "rg_name" {
+variable "resource_group_name" {
   description = "Name of the Azure Resource Group"
 }
 
-variable "rg_location" {
+variable "location" {
   description = "Location for the AKS cluster"
 }
 
