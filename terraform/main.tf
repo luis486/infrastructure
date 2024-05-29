@@ -80,6 +80,7 @@ module "keyvault" {
   key_permissions         = ["Get", "Create", "List", "Delete", "Purge", "Recover", "SetRotationPolicy", "GetRotationPolicy"]
   secret_permissions      = ["Get", "Set", "List", "Delete", "Purge", "Recover"]
   certificate_permissions = ["Get"]
+  sku_name                = "standard"
   secret_names            = ["mySecret1", "mySecret2"]
   secret_values           = ["miprimeracontra1!", "misegundacontra2!"]
   key_names               = ["myPLDKey1", "myPLDKey2"]
