@@ -70,6 +70,7 @@ module "appgw" {
 
 #------------------------------ KEY VAULT----------------------------------
 
+<<<<<<< Updated upstream
 module "key_vault" {
   source                      = "./modules/keyvault"
   key_vault_name              = "myPLDKeyVault"
@@ -89,6 +90,29 @@ module "key_vault" {
   time_before_expiry          = "P30D"
   expire_after                = "P90D"
   notify_before_expiry        = "P29D"
+=======
+
+resource "azurerm_key_vault" "key_vault" {
+  name                        = "myPLDKeyVault"
+  location                    = azurerm_resource_group.argk8s.location
+  resource_group_name         = azurerm_resource_group.argk8s.name
+  tenant_id                   = data.azurerm_client_config.current.tenant_id
+  soft_delete_retention_days  = 7
+  sku_name                    = "standard"
+  enabled_for_disk_encryption = true
+  purge_protection_enabled    = false
+
+
+
+  access_policy {
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    object_id = local.current_user_id
+
+    key_permissions         = ["Get", "Create", "List", "Delete", "Purge", "Recover", "SetRotationPolicy", "GetRotationPolicy"]
+    secret_permissions      = ["Get", "Set", "List", "Delete", "Purge", "Recover"]
+    certificate_permissions = ["Get"]
+  }
+>>>>>>> Stashed changes
 }
 
 
