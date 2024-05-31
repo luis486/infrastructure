@@ -14,7 +14,7 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
   }
 
   identity {
-    type = var.identity_type
+    type = "SystemAssigned"
   }
 
   key_vault_secrets_provider {

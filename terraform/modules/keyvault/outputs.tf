@@ -1,16 +1,16 @@
 output "key_vault_id" {
   description = "The ID of the created Azure Key Vault."
-  value       = azurerm_key_vault.key_vault_ecommerce.id
+  value       = azurerm_key_vault.key_vault.id
 }
 
 output "name" {
   description = "The ID of the created Azure Key Vault."
-  value       = azurerm_key_vault.key_vault_ecommerce.name
+  value       = azurerm_key_vault.key_vault.name
 }
 
 output "tenant_id" {
   description = "The ID of the created Azure Key Vault."
-  value       = azurerm_key_vault.key_vault_ecommerce.tenant_id
+  value       = azurerm_key_vault.key_vault.tenant_id
 }
 
 

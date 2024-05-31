@@ -50,9 +50,9 @@ module "network" {
 
 module "security_group" {
   source                  = "./modules/security_group"
-  security_group_name     = var.security_group_name
-  resource_group_location = azurerm_resource_group.ecommerce.location
-  resource_group_name     = azurerm_resource_group.ecommerce.name
+  security_group_name     = "SecurityGroupPLD"
+  resource_group_location = module.resources.location
+  resource_group_name     = module.resources.resource_group_name
 }
 
 # ----------------------------------- API GATEWAY -----------------------------------
@@ -81,34 +81,34 @@ module "appgw" {
 module "identity" {
   source              = "./modules/identity"
   name                = "myUserAssignedIdentity_Ecommerce"
-  resource_group_name = azurerm_resource_group.ecommerce.name
-  location            = azurerm_resource_group.ecommerce.location
+  resource_group_name = module.resources.resource_group_name
+  location            = module.resources.location
 }
 
 #------------------------------ KEY VAULT----------------------------------
 
 module "keyvault" {
-  source                  = "./modules/keyvault"
-  key_vault_name          = "myPLDKeyVault"
-  resource_group_name     = module.resources.resource_group_name
-  location                = module.resources.location
-  tenant_id               = data.azurerm_client_config.current.tenant_id
-  object_id               = local.current_user_id
-  key_permissions         = ["Get", "Create", "List", "Delete", "Purge", "Recover", "SetRotationPolicy", "GetRotationPolicy"]
-  secret_permissions      = ["Get", "Set", "List", "Delete", "Purge", "Recover"]
-  certificate_permissions = ["Get"]
-  sku_name                = "standard"
-  secret_names            = ["mySecret1", "mySecret2"]
-  secret_values           = ["miprimeracontra1!", "misegundacontra2!"]
-  key_names               = ["myPLDKey1", "myPLDKey2"]
-  key_types               = ["RSA", "RSA"]
-  key_sizes               = [2048, 2048]
-  key_opts                = ["decrypt", "encrypt", "sign", "unwrapKey", "verify", "wrapKey"]
-  time_before_expiry      = "P30D"
-  expire_after            = "P90D"
-  notify_before_expiry    = "P29D"
+  source                              = "./modules/keyvault"
+  key_vault_name                      = "myPLDKeyVault"
+  resource_group_name                 = module.resources.resource_group_name
+  location                            = module.resources.location
+  tenant_id                           = data.azurerm_client_config.current.tenant_id
+  object_id                           = local.current_user_id
+  key_permissions                     = ["Get", "Create", "List", "Delete", "Purge", "Recover", "SetRotationPolicy", "GetRotationPolicy"]
+  secret_permissions                  = ["Get", "Set", "List", "Delete", "Purge", "Recover"]
+  certificate_permissions             = ["Get"]
+  sku_name                            = "standard"
+  secret_names                        = ["mySecret1", "mySecret2"]
+  secret_values                       = ["miprimeracontra1!", "misegundacontra2!"]
+  key_names                           = ["myPLDKey1", "myPLDKey2"]
+  key_types                           = ["RSA", "RSA"]
+  key_sizes                           = [2048, 2048]
+  key_opts                            = ["decrypt", "encrypt", "sign", "unwrapKey", "verify", "wrapKey"]
+  time_before_expiry                  = "P30D"
+  expire_after                        = "P90D"
+  notify_before_expiry                = "P29D"
   user_assigned_identity_principal_id = module.identity.principal_id
-  aks_secret_provider_id      = module.cluster.aks_secret_provider
+  aks_secret_provider_id              = module.cluster.aks_secret_provider
 }
 
 
