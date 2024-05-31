@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: store
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: store
+  template:
+    metadata:
+      labels:
+        app: store
+    spec:
+      containers:
+        - name: store
+          image: mypldfirstcontainerregistry.azurecr.io/ecommerce-store:0.0.1
+          ports:
+            - containerPort: 3001
+          envFrom:
+            - configMapRef:
+                name: store-config

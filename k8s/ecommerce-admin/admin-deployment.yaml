@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: admin
+  template:
+    metadata:
+      labels:
+        app: admin
+    spec:
+      containers:
+        - name: admin
+          image: mypldfirstcontainerregistry.azurecr.io/ecommerce-admin:0.0.1
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: admin-config
+            - secretRef:
+                name: admin-secret

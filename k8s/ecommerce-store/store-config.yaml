@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: store-config
+data:
+  NEXT_PUBLIC_API_URL: http://localhost:3000/api/0b1de3d2-86f0-44c9-80ff-f4d44b4b0a36
+  REACT_EDITOR: atom
