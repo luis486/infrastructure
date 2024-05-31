@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: admin
-          image: luis486/ecommerce-admin:latest
+          image: luis486/ecommerce-admin:0.0.1
           ports:
             - containerPort: 3000
           envFrom:
