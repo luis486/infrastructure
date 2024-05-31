@@ -1,6 +1,6 @@
 resource "azurerm_kubernetes_cluster" "aks_cluster" {
   name                = var.cluster_name
-  location             = var.location
+  location            = var.location
   resource_group_name = var.resource_group_name
   dns_prefix          = var.dns_prefix
 
@@ -14,7 +14,7 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
   }
 
   identity {
-    type = "SystemAssigned"
+    type = var.identity_type
   }
 
   key_vault_secrets_provider {
@@ -22,7 +22,6 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
     secret_rotation_enabled = var.secret_rotation_enabled
   }
 
-  private_cluster_enabled = var.private_cluster_enabled
   
 }
 

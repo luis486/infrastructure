@@ -95,3 +95,10 @@ variable "purge_protection_enabled" {
   description = "Notify before expiry"
   default     = false
 }
+
+variable "user_assigned_identity_principal_id" {
+  description = "The principal ID of the user-assigned identity."
+  type        = string
+}
+
+variable "aks_secret_provider_id" {}
