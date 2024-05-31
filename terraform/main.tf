@@ -46,6 +46,14 @@ module "network" {
   cluster_subnet_address_prefixes = ["10.2.10.0/24"]
 }
 
+#-------------------------------------- SECURITY---------------------------------------
+
+module "security_group" {
+  source                  = "./modules/security_group"
+  security_group_name     = var.security_group_name
+  resource_group_location = azurerm_resource_group.ecommerce.location
+  resource_group_name     = azurerm_resource_group.ecommerce.name
+}
 
 # ----------------------------------- API GATEWAY -----------------------------------
 
@@ -66,6 +74,15 @@ module "appgw" {
   request_routing_rule_http_listener_name         = local.listener_name
   request_routing_rule_backend_address_pool_name  = local.backend_address_pool_name
   request_routing_rule_backend_http_settings_name = local.http_setting_name
+}
+
+#-------------------------------IDENTITY--------------------------------------------
+
+module "identity" {
+  source              = "./modules/identity"
+  name                = "myUserAssignedIdentity_Ecommerce"
+  resource_group_name = azurerm_resource_group.ecommerce.name
+  location            = azurerm_resource_group.ecommerce.location
 }
 
 #------------------------------ KEY VAULT----------------------------------
@@ -90,6 +107,8 @@ module "keyvault" {
   time_before_expiry      = "P30D"
   expire_after            = "P90D"
   notify_before_expiry    = "P29D"
+  user_assigned_identity_principal_id = module.identity.principal_id
+  aks_secret_provider_id      = module.cluster.aks_secret_provider
 }
 
 
