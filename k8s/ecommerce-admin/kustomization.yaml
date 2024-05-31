@@ -3,6 +3,6 @@ kind: Kustomization
 
 resources: 
   - admin-config.yaml
-  - admin-deployment.yaml
   - admin-secret.yaml
+  - admin-deployment.yaml
   - admin-service.yaml
