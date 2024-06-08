@@ -1,8 +1,7 @@
-resource "azurerm_container_registry" "container_registry" {
-  name                = var.cr_name
+resource "azurerm_container_registry" "acrk8s" {
+  name                = var.container_name
   resource_group_name = var.resource_group_name
-  location            = var.location
+  location            = var.resource_group_location
   sku                 = var.container_sku
-  admin_enabled       = true
+  admin_enabled       = var.admin_enabled
 }
-

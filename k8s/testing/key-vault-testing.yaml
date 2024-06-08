@@ -1,0 +1,52 @@
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: azure-kvname-user-msi
+  namespace: ecommerce
+spec:
+  provider: azure
+  parameters:
+    usePodIdentity: "false"
+    useVMManagedIdentity: "true"
+    userAssignedIdentityID: "2d7cc21a-a548-44eb-b196-fb42a697da5e"
+    keyvaultName: "my-ldp-KvEcommerce"
+    objects: |
+      array:
+        - |
+          objectName: NEXT-PUBLIC-CLERK-PUBLISHABLE-KEY
+          objectType: secret
+    tenantId: "e994072b-523e-4bfe-86e2-442c5e10b244"
+  secretObjects:
+  - secretName: NEXT-PUBLIC-CLERK-PUBLISHABLE-KEY
+    type: Opaque
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dependent-envars-demo
+  namespace: ecommerce
+spec:
+  containers:
+    - name: dependent-envars-demo
+      image: busybox:1.28
+      command:
+        - sh
+        - -c
+        - |
+          while true; do 
+            echo -en '\n'; 
+            printf "UNCHANGED_REFERENCE=$(cat /mnt/secrets-store/NEXT-PUBLIC-CLERK-PUBLISHABLE-KEY)\n"; 
+            sleep 30; 
+          done;
+      env: []
+      volumeMounts:
+      - name: secrets-store-inline
+        mountPath: /mnt/secrets-store
+        readOnly: true
+  volumes:
+    - name: secrets-store-inline
+      csi:
+        driver: secrets-store.csi.k8s.io
+        readOnly: true
+        volumeAttributes:
+          secretProviderClass: "azure-kvname-user-msi"

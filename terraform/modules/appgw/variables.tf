@@ -1,129 +1,139 @@
-
-variable "application_gateway" {
+variable "application_gateway_name" {
   description = "The name of the Application Gateway."
-  default = "myPLDApplicationGateway"
+  type        = string
 }
 
 variable "resource_group_name" {
-  description = "The name of the resource group in which to create the Application Gateway."
+  description = "The name of the resource group."
+  type        = string
 }
 
 variable "location" {
-  description = "The location/region where the Application Gateway will be deployed."
+  description = "The location of the resource group."
+  type        = string
 }
 
 variable "sku_name" {
-  description = "The name of the SKU for the Application Gateway."
-  default = "Standard_v2"
+  description = "The SKU name of the Application Gateway."
+  type        = string
 }
 
 variable "sku_tier" {
-  description = "The tier of the SKU for the Application Gateway."
-  default = "Standard_v2"
+  description = "The SKU tier of the Application Gateway."
+  type        = string
 }
 
 variable "sku_capacity" {
-  description = "The capacity (instance count) of the SKU for the Application Gateway."
-  type = number
-  default = 2
+  description = "The capacity of the Application Gateway."
+  type        = number
 }
 
 variable "gateway_ip_configuration_name" {
   description = "The name of the gateway IP configuration."
-  default = "appGatewayIpConfig"
+  type        = string
 }
 
 variable "subnet_id" {
-  description = "The ID of the subnet to which the Application Gateway should be deployed."
+  description = "The ID of the subnet."
+  type        = string
 }
 
 variable "frontend_ip_configuration_name" {
   description = "The name of the frontend IP configuration."
+  type        = string
 }
 
 variable "public_ip_address_id" {
-  description = "The ID of the public IP address to associate with the frontend IP configuration."
+  description = "The ID of the public IP address."
+  type        = string
 }
 
 variable "frontend_port_name" {
   description = "The name of the frontend port."
+  type        = string
 }
 
 variable "frontend_port_port" {
-  description = "The port number of the frontend port."
-  type = number
-  default = 80
+  description = "The port number for the frontend port."
+  type        = number
 }
 
 variable "backend_address_pool_name" {
   description = "The name of the backend address pool."
+  type        = string
 }
 
 variable "backend_http_settings_name" {
   description = "The name of the backend HTTP settings."
+  type        = string
 }
 
 variable "cookie_based_affinity" {
-  default = "Disabled"
+  description = "Cookie-based affinity setting for the backend HTTP settings."
+  type        = string
 }
 
 variable "backend_http_settings_port" {
   description = "The port number for the backend HTTP settings."
-  type = number
-  default = 80
+  type        = number
 }
 
 variable "backend_http_settings_protocol" {
-  description = "The protocol for the backend HTTP settings (e.g., 'Http' or 'Https')."
-  default = "Http"
+  description = "The protocol for the backend HTTP settings."
+  type        = string
 }
 
 variable "backend_http_settings_request_timeout" {
-  description = "The request timeout for the backend HTTP settings (in seconds)."
-  type = number
-  default = 60
+  description = "The request timeout for the backend HTTP settings."
+  type        = number
 }
 
 variable "http_listener_name" {
   description = "The name of the HTTP listener."
+  type        = string
 }
 
 variable "http_listener_frontend_ip_configuration_name" {
-  description = "The name of the frontend IP configuration associated with the HTTP listener."
+  description = "The name of the frontend IP configuration for the HTTP listener."
+  type        = string
 }
 
 variable "http_listener_frontend_port_name" {
-  description = "The name of the frontend port associated with the HTTP listener."
+  description = "The name of the frontend port for the HTTP listener."
+  type        = string
 }
 
 variable "http_listener_protocol" {
-  description = "The protocol for the HTTP listener (e.g., 'Http' or 'Https')."
-  default = "Http"
+  description = "The protocol for the HTTP listener."
+  type        = string
 }
 
 variable "request_routing_rule_name" {
   description = "The name of the request routing rule."
+  type        = string
 }
 
 variable "request_routing_rule_rule_type" {
-  description = "The type of the request routing rule."
-  default = "Basic"
+  description = "The rule type for the request routing rule."
+  type        = string
 }
 
 variable "request_routing_rule_priority" {
-  description = "The priority of the request routing rule."
-  type = number
-  default = 9
+  description = "The priority for the request routing rule."
+  type        = number
 }
 
 variable "request_routing_rule_http_listener_name" {
-  description = "The name of the HTTP listener associated with the request routing rule."
+  description = "The name of the HTTP listener for the request routing rule."
+  type        = string
 }
 
 variable "request_routing_rule_backend_address_pool_name" {
-  description = "The name of the backend address pool associated with the request routing rule."
+  description = "The name of the backend address pool for the request routing rule."
+  type        = string
 }
 
 variable "request_routing_rule_backend_http_settings_name" {
-  description = "The name of the backend HTTP settings associated with the request routing rule."
+  description = "The name of the backend HTTP settings for the request routing rule."
+  type        = string
 }

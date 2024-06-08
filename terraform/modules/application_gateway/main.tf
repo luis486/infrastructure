@@ -1,7 +1,10 @@
+# application_gateway/main.tf
+
 resource "azurerm_application_gateway" "myApplicationGateway" {
   name                = var.application_gateway_name
   resource_group_name = var.resource_group_name
   location            = var.location
+
   sku {
     name     = var.sku_name
     tier     = var.sku_tier
@@ -37,8 +40,8 @@ resource "azurerm_application_gateway" "myApplicationGateway" {
 
   http_listener {
     name                           = var.http_listener_name
-    frontend_ip_configuration_name = var.frontend_ip_configuration_name
-    frontend_port_name             = var.frontend_port_name
+    frontend_ip_configuration_name = var.http_listener_frontend_ip_configuration_name
+    frontend_port_name             = var.http_listener_frontend_port_name
     protocol                       = var.http_listener_protocol
   }
 
@@ -46,8 +49,8 @@ resource "azurerm_application_gateway" "myApplicationGateway" {
     name                       = var.request_routing_rule_name
     rule_type                  = var.request_routing_rule_rule_type
     priority                   = var.request_routing_rule_priority
-    http_listener_name         = var.http_listener_name
-    backend_address_pool_name  = var.backend_address_pool_name
-    backend_http_settings_name = var.backend_http_settings_name
+    http_listener_name         = var.request_routing_rule_http_listener_name
+    backend_address_pool_name  = var.request_routing_rule_backend_address_pool_name
+    backend_http_settings_name = var.request_routing_rule_backend_http_settings_name
   }
 }
